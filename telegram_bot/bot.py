@@ -4,7 +4,8 @@ from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, ContextTypes, CallbackQueryHandler
 # Removed ConversationHandler, MessageHandler, filters as they are not used for signal generation
 import database
-import telegram_bot.signals as signals # Import the signals module
+import telegram_bot.signals as signal_formatter # Renamed for clarity
+import telegram_bot.analyzer_service_mock as analyzer_service # Added analyzer service
 import random # For random result
 from datetime import datetime, timezone # For sent_time in signal_info (optional for now)
 
@@ -194,8 +195,8 @@ async def test_signal_command(update: Update, context: ContextTypes.DEFAULT_TYPE
     user_id = update.effective_user.id
     logger.info(f"User {user_id} triggered /test_signal")
 
-    signal_data = signals.generate_signal() # Use the function from signals.py
-    message_text, reply_markup_dict = signals.format_signal_message(signal_data) # Use the function from signals.py
+    signal_data = analyzer_service.generate_mock_signal() # Use the analyzer service
+    message_text, reply_markup_dict = signal_formatter.format_signal_message(signal_data) # Use the formatter
     
     # Convert the dict to an InlineKeyboardMarkup object
     # The format_signal_message in signals.py should return a dict like:
@@ -233,8 +234,8 @@ async def send_signal_command(update: Update, context: ContextTypes.DEFAULT_TYPE
         )
         return
 
-    signal_data = signals.generate_signal()
-    message_text, reply_markup_dict = signals.format_signal_message(signal_data)
+    signal_data = analyzer_service.generate_mock_signal() # Use the analyzer service
+    message_text, reply_markup_dict = signal_formatter.format_signal_message(signal_data) # Use the formatter
     
     # Parse duration string (e.g., "1Min", "2Min") to seconds
     duration_str = signal_data['duration']
